@@ -1,0 +1,1451 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Form - Task Manager</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .form-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-header h1 {
+            color: #333;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .form-header p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .form-group label i {
+            margin-right: 8px;
+            color: #667eea;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+            font-family: inherit;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .form-control.error {
+            border-color: #dc3545;
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 120px;
+            line-height: 1.5;
+        }
+
+        .select-wrapper {
+            position: relative;
+        }
+
+        .select-wrapper::after {
+            content: '\f107';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: #667eea;
+        }
+
+        select.form-control {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background: white;
+            cursor: pointer;
+            padding-right: 50px;
+        }
+
+        .priority-options {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .priority-option {
+            flex: 1;
+            position: relative;
+        }
+
+        .priority-option input[type="radio"] {
+            display: none;
+        }
+
+        .priority-option label {
+            display: block;
+            padding: 12px 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            margin-bottom: 0;
+        }
+
+        .priority-option.high label {
+            border-color: #dc3545;
+            color: #dc3545;
+        }
+
+        .priority-option.medium label {
+            border-color: #ffc107;
+            color: #ffc107;
+        }
+
+        .priority-option.low label {
+            border-color: #28a745;
+            color: #28a745;
+        }
+
+        .priority-option input[type="radio"]:checked+label {
+            background: currentColor;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .checkbox-wrapper input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #667eea;
+        }
+
+        .checkbox-wrapper label {
+            margin-bottom: 0;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .date-time-group {
+            display: flex;
+            gap: 15px;
+        }
+
+        .date-time-group>div {
+            flex: 1;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            min-width: 120px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.4);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 6px 20px rgba(108, 117, 125, 0.6);
+        }
+
+        .btn-success {
+            background: #28a745;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+        }
+
+        .btn-success:hover {
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.6);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid #e1e5e9;
+        }
+
+        .field-error {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .field-error i {
+            font-size: 12px;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .character-count {
+            text-align: right;
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .character-count.warning {
+            color: #ffc107;
+        }
+
+        .character-count.error {
+            color: #dc3545;
+        }
+
+        .form-tips {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .form-tips h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .form-tips ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .form-tips li {
+            margin-bottom: 8px;
+            padding-left: 25px;
+            position: relative;
+            color: #666;
+        }
+
+        .form-tips li::before {
+            content: '\f058';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: #667eea;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading i {
+            font-size: 24px;
+            color: #667eea;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .form-section {
+            margin-bottom: 35px;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .form-section h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-section h3 i {
+            color: #667eea;
+        }
+
+        .tag-input {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 10px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            background: white;
+            min-height: 50px;
+            align-items: center;
+        }
+
+        .tag-input:focus-within {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .tag {
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .tag .remove-tag {
+            cursor: pointer;
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        .tag .remove-tag:hover {
+            opacity: 1;
+        }
+
+        .tag-input input {
+            border: none;
+            outline: none;
+            flex: 1;
+            min-width: 100px;
+            padding: 8px;
+            font-size: 14px;
+        }
+
+        .attachment-area {
+            border: 2px dashed #667eea;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            background: rgba(102, 126, 234, 0.05);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .attachment-area:hover {
+            background: rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .attachment-area.dragover {
+            background: rgba(102, 126, 234, 0.15);
+            border-color: #764ba2;
+        }
+
+        .attachment-area i {
+            font-size: 48px;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .attachment-list {
+            margin-top: 15px;
+        }
+
+        .attachment-item {
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .attachment-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .attachment-info i {
+            color: #667eea;
+        }
+
+        .remove-attachment {
+            color: #dc3545;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .remove-attachment:hover {
+            background: #f8d7da;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .form-container {
+                padding: 20px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .priority-options {
+                flex-direction: column;
+            }
+
+            .date-time-group {
+                flex-direction: column;
+            }
+
+            .form-header h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <a href="/dashboard" class="logo">
+                <i class="fas fa-tasks"></i> Task Manager
+            </a>
+            <nav class="nav-links">
+                <a href="/dashboard">Dashboard</a>
+                <a href="/tasks/new">New Task</a>
+                <span th:text="'Welcome, ' + ${user.username}">Welcome, User</span>
+                <a href="/logout">Logout</a>
+            </nav>
+        </header>
+
+        <div class="form-container">
+            <div class="form-header">
+                <h1 id="formTitle">
+                    <i class="fas fa-plus-circle"></i> Create New Task
+                </h1>
+                <p id="formDescription">Fill in the details below to create a new task</p>
+            </div>
+
+            <!-- Alert Messages -->
+            <div id="alertContainer"></div>
+
+            <!-- Form Tips -->
+            <div class="form-tips">
+                <h3><i class="fas fa-lightbulb"></i> Tips for Creating Great Tasks</h3>
+                <ul>
+                    <li>Use clear, descriptive titles that explain what needs to be done</li>
+                    <li>Set realistic deadlines to avoid stress and ensure completion</li>
+                    <li>Add detailed descriptions to provide context and requirements</li>
+                    <li>Choose appropriate priority levels based on urgency and importance</li>
+                    <li>Use tags to organize and categorize your tasks effectively</li>
+                </ul>
+            </div>
+
+            <!-- <form id="taskForm" method="post" enctype="multipart/form-data"> -->
+            <form th:action="@{/tasks}" method="post" th:object="${task}" enctype="multipart/form-data">
+                
+                <!-- CSRF Token -->
+                <!-- <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /> -->
+
+                <div sec:csrfInput=""/>
+
+                <!-- <input type="hidden"
+       th:name="${#request.getAttribute('_csrf').parameterName}"
+       th:value="${#request.getAttribute('_csrf').token}" /> -->
+
+
+                <!-- Basic Information Section -->
+                <div class="form-section">
+                    <h3><i class="fas fa-info-circle"></i> Basic Information</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="title">
+                                <i class="fas fa-heading"></i> Task Title *
+                            </label>
+                            <input type="text" id="title" th:field="*{title}" class="form-control"
+                                placeholder="Enter task title" required maxlength="100">
+                            <div class="character-count" id="titleCount">0/100</div>
+                            <div class="field-error text-danger" th:if="${#fields.hasErrors('title')}"
+                                th:errors="*{title}"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="category">
+                                <i class="fas fa-folder"></i> Category
+                            </label>
+                            <div class="select-wrapper">
+                                <select id="category" th:field="*{category}" class="form-control">
+                                    <option value="">Select category</option>
+                                    <option value="work">Work</option>
+                                    <option value="personal">Personal</option>
+                                    <option value="health">Health</option>
+                                    <option value="education">Education</option>
+                                    <option value="finance">Finance</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="description">
+                            <i class="fas fa-align-left"></i> Description
+                        </label>
+                        <textarea id="description" th:field="*{description}" class="form-control"
+                            placeholder="Provide detailed description of the task" maxlength="500"></textarea>
+                        <div class="character-count" id="descriptionCount">0/500</div>
+                        <div class="field-error text-danger" th:if="${#fields.hasErrors('description')}"
+                            th:errors="*{description}"></div>
+                    </div>
+                </div>
+
+                <!-- Priority and Settings Section -->
+                <div class="form-section">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Priority & Settings</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label><i class="fas fa-flag"></i> Priority Level *</label>
+                            <div class="priority-options">
+                                <div class="priority-option high">
+                                    <input type="radio" id="priority-high" th:field="*{priority}" value="high" required>
+                                    <label for="priority-high"><i class="fas fa-exclamation-triangle"></i> High</label>
+                                </div>
+                                <div class="priority-option medium">
+                                    <input type="radio" id="priority-medium" th:field="*{priority}" value="medium">
+                                    <label for="priority-medium"><i class="fas fa-minus-circle"></i> Medium</label>
+                                </div>
+                                <div class="priority-option low">
+                                    <input type="radio" id="priority-low" th:field="*{priority}" value="low">
+                                    <label for="priority-low"><i class="fas fa-arrow-down"></i> Low</label>
+                                </div>
+                            </div>
+                            <div class="field-error text-danger" th:if="${#fields.hasErrors('priority')}"
+                                th:errors="*{priority}"></div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="status">
+                                <i class="fas fa-tasks"></i> Status
+                            </label>
+                            <div class="select-wrapper">
+                                <select id="status" th:field="*{status}" class="form-control">
+                                    <option value="PENDING">Pending</option>
+                                    <option value="IN_PROGRESS">In Progress</option>
+                                    <option value="COMPLETED">Completed</option>
+                                    <option value="CANCELLED">Cancelled</option>
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" id="isImportant" th:field="*{important}">
+                            <label for="isImportant">
+                                <i class="fas fa-star"></i> Mark as Important
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Deadline Section -->
+                <div class="form-section">
+                    <h3><i class="fas fa-calendar-alt"></i> Deadline & Timing</h3>
+                    <div class="form-group">
+                        <label for="deadline">
+                            <i class="fas fa-calendar"></i> Deadline
+                        </label>
+                        <input type="datetime-local" id="deadline" th:field="*{deadline}" class="form-control" />
+                        <div class="field-error text-danger" th:if="${#fields.hasErrors('deadline')}"
+                            th:errors="*{deadline}"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="estimatedHours">
+                            <i class="fas fa-hourglass-half"></i> Estimated Hours
+                        </label>
+                        <input type="number" id="estimatedHours" th:field="*{estimatedHours}" class="form-control"
+                            placeholder="Enter estimated hours" min="0" max="999" step="0.5">
+                    </div>
+                </div>
+
+                <!-- Tags Section -->
+                <div class="form-section">
+                    <h3><i class="fas fa-tags"></i> Tags</h3>
+                    <div class="form-group">
+                        <label for="tags">
+                            <i class="fas fa-tag"></i> Add Tags (Press Enter to add)
+                        </label>
+                        <div class="tag-input" id="tagInput">
+                            <input type="text" id="tagInputField" placeholder="Type a tag and press Enter">
+                        </div>
+                        <input type="hidden" th:field="*{tags}" id="tagsHidden">
+                    </div>
+                </div>
+
+                <!-- Attachments Section -->
+                <div class="form-section">
+                    <h3><i class="fas fa-paperclip"></i> Attachments</h3>
+                    <div class="form-group">
+                        <div class="attachment-area" id="attachmentArea">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <h4>Drop files here or click to browse</h4>
+                            <p>Support for PDF, DOC, XLS, JPG, PNG files up to 10MB</p>
+                            <input type="file" id="fileInput" name="attachments" multiple
+                                accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png" style="display: none;">
+                        </div>
+                        <div class="attachment-list" id="attachmentList"></div>
+                    </div>
+                </div>
+
+                <!-- Loading Indicator -->
+                <div class="loading" id="loadingIndicator">
+                    <i class="fas fa-spinner"></i>
+                    <p>Saving task...</p>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i> Save Task
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="previewBtn">
+                        <i class="fas fa-eye"></i> Preview
+                    </button>
+                    <a href="/dashboard" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Cancel
+                    </a>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <script>
+        // Form state management
+        let attachments = [];
+        let tags = [];
+        let isEditing = false;
+        let taskId = null;
+
+        // Initialize form
+        document.addEventListener('DOMContentLoaded', function () {
+            setupEventListeners();
+            setupValidation();
+            setupAutoSave();
+            checkEditMode();
+            setMinDate();
+        });
+
+        // Check if we're in edit mode
+        function checkEditMode() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const editId = urlParams.get('edit');
+
+            if (editId) {
+                isEditing = true;
+                taskId = editId;
+                document.getElementById('formTitle').innerHTML = '<i class="fas fa-edit"></i> Edit Task';
+                document.getElementById('formDescription').textContent = 'Update the task details below';
+                loadTaskData(editId);
+            }
+        }
+
+        // Load task data for editing
+        function loadTaskData(id) {
+            // Simulate loading existing task data
+            const mockData = {
+                title: 'Complete Project Proposal',
+                description: 'Finalize the project proposal for the new client including budget estimates, timeline, and deliverables.',
+                category: 'work',
+                priority: 'high',
+                status: 'pending',
+                dueDate: '2024-12-20',
+                dueTime: '17:00',
+                estimatedHours: 8,
+                isImportant: true,
+                tags: ['project', 'client', 'proposal']
+            };
+
+            // Populate form fields
+            document.getElementById('title').value = mockData.title;
+            document.getElementById('description').value = mockData.description;
+            document.getElementById('category').value = mockData.category;
+            document.querySelector(`input[name="priority"][value="${mockData.priority}"]`).checked = true;
+            document.getElementById('status').value = mockData.status;
+            document.getElementById('dueDate').value = mockData.dueDate;
+            document.getElementById('dueTime').value = mockData.dueTime;
+            document.getElementById('estimatedHours').value = mockData.estimatedHours;
+            document.getElementById('isImportant').checked = mockData.isImportant;
+
+            // Load tags
+            tags = mockData.tags || [];
+            updateTagDisplay();
+            updateCharacterCounts();
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Character count updates
+            document.getElementById('title').addEventListener('input', updateCharacterCounts);
+            document.getElementById('description').addEventListener('input', updateCharacterCounts);
+
+            // Form submission
+            document.getElementById('taskForm').addEventListener('submit', handleSubmit);
+
+            // Preview button
+            document.getElementById('previewBtn').addEventListener('click', showPreview);
+
+            // Tag input
+            document.getElementById('tagInputField').addEventListener('keypress', handleTagInput);
+
+            // File upload
+            const fileInput = document.getElementById('fileInput');
+            const attachmentArea = document.getElementById('attachmentArea');
+
+            attachmentArea.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', handleFileSelect);
+
+            // Drag and drop
+            attachmentArea.addEventListener('dragover', handleDragOver);
+            attachmentArea.addEventListener('drop', handleDrop);
+            attachmentArea.addEventListener('dragleave', handleDragLeave);
+
+            // Priority selection effects
+            document.querySelectorAll('input[name="priority"]').forEach(radio => {
+                radio.addEventListener('change', updatePriorityDisplay);
+            });
+
+            // Date validation
+            document.getElementById('dueDate').addEventListener('change', validateDate);
+        }
+
+        // Setup form validation
+        function setupValidation() {
+            const form = document.getElementById('taskForm');
+            const inputs = form.querySelectorAll('.form-control');
+
+            inputs.forEach(input => {
+                input.addEventListener('blur', validateField);
+                input.addEventListener('input', clearFieldError);
+            });
+        }
+
+        // Setup auto-save functionality
+        function setupAutoSave() {
+            let autoSaveTimer;
+            const form = document.getElementById('taskForm');
+
+            form.addEventListener('input', function () {
+                clearTimeout(autoSaveTimer);
+                autoSaveTimer = setTimeout(autoSave, 5000); // Auto-save after 5 seconds of inactivity
+            });
+        }
+        // Auto-save functionality
+        function autoSave() {
+            if (!isFormValid()) return;
+
+            const formData = collectFormData();
+            // Simulate auto-save
+            console.log('Auto-saving task...', formData);
+            showAlert('Task auto-saved', 'info');
+        }
+
+        // Set minimum date to today
+        function setMinDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('dueDate').setAttribute('min', today);
+        }
+
+        // Update character counts
+        function updateCharacterCounts() {
+            const titleInput = document.getElementById('title');
+            const descriptionInput = document.getElementById('description');
+
+            updateCharacterCount(titleInput, 'titleCount', 100);
+            updateCharacterCount(descriptionInput, 'descriptionCount', 500);
+        }
+
+        function updateCharacterCount(input, counterId, maxLength) {
+            const counter = document.getElementById(counterId);
+            const length = input.value.length;
+
+            counter.textContent = `${length}/${maxLength}`;
+
+            if (length > maxLength * 0.9) {
+                counter.classList.add('warning');
+                counter.classList.remove('error');
+            } else if (length >= maxLength) {
+                counter.classList.add('error');
+                counter.classList.remove('warning');
+            } else {
+                counter.classList.remove('warning', 'error');
+            }
+        }
+
+        // Handle form submission
+        function handleSubmit(e) {
+            e.preventDefault();
+
+            if (!validateForm()) {
+                showAlert('Please correct the errors below', 'error');
+                return;
+            }
+
+            showLoading(true);
+
+            const formData = collectFormData();
+
+            // Simulate API call
+            setTimeout(() => {
+                showLoading(false);
+
+                if (isEditing) {
+                    showAlert('Task updated successfully!', 'success');
+                } else {
+                    showAlert('Task created successfully!', 'success');
+                }
+
+                // Redirect after success
+                setTimeout(() => {
+                    window.location.href = '/dashboard';
+                }, 1500);
+            }, 2000);
+        }
+
+        // Collect form data
+        function collectFormData() {
+            const formData = {
+                title: document.getElementById('title').value,
+                description: document.getElementById('description').value,
+                category: document.getElementById('category').value,
+                priority: document.querySelector('input[name="priority"]:checked')?.value,
+                status: document.getElementById('status').value,
+                dueDate: document.getElementById('dueDate').value,
+                dueTime: document.getElementById('dueTime').value,
+                estimatedHours: document.getElementById('estimatedHours').value,
+                isImportant: document.getElementById('isImportant').checked,
+                tags: tags,
+                attachments: attachments
+            };
+
+            return formData;
+        }
+
+        // Form validation
+        function validateForm() {
+            let isValid = true;
+
+            // Required fields
+            if (!validateRequired('title', 'Please enter a task title')) isValid = false;
+            if (!validateRequired('priority', 'Please select a priority level')) isValid = false;
+
+            // Title length
+            const title = document.getElementById('title').value;
+            if (title.length > 100) {
+                showFieldError('title', 'Title must be 100 characters or less');
+                isValid = false;
+            }
+
+            // Description length
+            const description = document.getElementById('description').value;
+            if (description.length > 500) {
+                showFieldError('description', 'Description must be 500 characters or less');
+                isValid = false;
+            }
+
+            // Date validation
+            const dueDate = document.getElementById('dueDate').value;
+            if (dueDate && new Date(dueDate) < new Date().setHours(0, 0, 0, 0)) {
+                showFieldError('dueDate', 'Due date cannot be in the past');
+                isValid = false;
+            }
+
+            // Estimated hours validation
+            const estimatedHours = document.getElementById('estimatedHours').value;
+            if (estimatedHours && (estimatedHours < 0 || estimatedHours > 999)) {
+                showFieldError('estimatedHours', 'Estimated hours must be between 0 and 999');
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        function validateRequired(fieldName, message) {
+            if (fieldName === 'priority') {
+                const checked = document.querySelector('input[name="priority"]:checked');
+                if (!checked) {
+                    showFieldError('priority', message);
+                    return false;
+                }
+            } else {
+                const field = document.getElementById(fieldName);
+                if (!field.value.trim()) {
+                    showFieldError(fieldName, message);
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function validateField(e) {
+            const field = e.target;
+            clearFieldError(field.id);
+
+            // Individual field validation
+            if (field.id === 'title' && field.value.length > 100) {
+                showFieldError(field.id, 'Title must be 100 characters or less');
+            }
+
+            if (field.id === 'description' && field.value.length > 500) {
+                showFieldError(field.id, 'Description must be 500 characters or less');
+            }
+
+            if (field.id === 'dueDate' && field.value) {
+                validateDate();
+            }
+        }
+
+        function validateDate() {
+            const dueDate = document.getElementById('dueDate').value;
+            if (dueDate && new Date(dueDate) < new Date().setHours(0, 0, 0, 0)) {
+                showFieldError('dueDate', 'Due date cannot be in the past');
+            }
+        }
+
+        function isFormValid() {
+            const title = document.getElementById('title').value.trim();
+            const priority = document.querySelector('input[name="priority"]:checked');
+            return title && priority;
+        }
+
+        // Error handling
+        function showFieldError(fieldId, message) {
+            const field = document.getElementById(fieldId);
+            const errorElement = document.getElementById(fieldId + 'Error');
+
+            if (field) {
+                field.classList.add('error');
+            }
+
+            if (errorElement) {
+                errorElement.querySelector('span').textContent = message;
+                errorElement.style.display = 'flex';
+            }
+        }
+
+        function clearFieldError(fieldId) {
+            const field = document.getElementById(fieldId);
+            const errorElement = document.getElementById(fieldId + 'Error');
+
+            if (field) {
+                field.classList.remove('error');
+            }
+
+            if (errorElement) {
+                errorElement.style.display = 'none';
+            }
+        }
+
+        // Alert system
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertId = 'alert-' + Date.now();
+
+            const alertHTML = `
+                <div id="${alertId}" class="alert alert-${type}">
+                    <i class="fas fa-${getAlertIcon(type)}"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+
+            alertContainer.innerHTML = alertHTML;
+
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                const alert = document.getElementById(alertId);
+                if (alert) {
+                    alert.remove();
+                }
+            }, 5000);
+        }
+
+        function getAlertIcon(type) {
+            switch (type) {
+                case 'success': return 'check-circle';
+                case 'error': return 'exclamation-circle';
+                case 'info': return 'info-circle';
+                default: return 'info-circle';
+            }
+        }
+
+        // Loading indicator
+        function showLoading(show) {
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const form = document.getElementById('taskForm');
+
+            if (show) {
+                loadingIndicator.style.display = 'block';
+                form.style.opacity = '0.7';
+                form.style.pointerEvents = 'none';
+            } else {
+                loadingIndicator.style.display = 'none';
+                form.style.opacity = '1';
+                form.style.pointerEvents = 'auto';
+            }
+        }
+
+        // Tag management
+        function handleTagInput(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const tagValue = e.target.value.trim();
+
+                if (tagValue && !tags.includes(tagValue) && tags.length < 10) {
+                    tags.push(tagValue);
+                    updateTagDisplay();
+                    e.target.value = '';
+                }
+            }
+        }
+
+        function updateTagDisplay() {
+            const tagInput = document.getElementById('tagInput');
+            const tagInputField = document.getElementById('tagInputField');
+
+            // Clear existing tags
+            const existingTags = tagInput.querySelectorAll('.tag');
+            existingTags.forEach(tag => tag.remove());
+
+            // Add tags
+            tags.forEach(tag => {
+                const tagElement = document.createElement('div');
+                tagElement.className = 'tag';
+                tagElement.innerHTML = `
+                    <span>${tag}</span>
+                    <span class="remove-tag" onclick="removeTag('${tag}')">×</span>
+                `;
+                tagInput.insertBefore(tagElement, tagInputField);
+            });
+
+            // Update hidden input
+            document.getElementById('tagsHidden').value = tags.join(',');
+        }
+
+        function removeTag(tagToRemove) {
+            tags = tags.filter(tag => tag !== tagToRemove);
+            updateTagDisplay();
+        }
+
+        // File handling
+        function handleFileSelect(e) {
+            const files = Array.from(e.target.files);
+            processFiles(files);
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.currentTarget.classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.currentTarget.classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('dragover');
+
+            const files = Array.from(e.dataTransfer.files);
+            processFiles(files);
+        }
+
+        function processFiles(files) {
+            files.forEach(file => {
+                if (validateFile(file)) {
+                    attachments.push({
+                        name: file.name,
+                        size: file.size,
+                        type: file.type,
+                        id: Date.now() + Math.random()
+                    });
+                }
+            });
+
+            updateAttachmentDisplay();
+        }
+
+        function validateFile(file) {
+            const allowedTypes = [
+                'application/pdf',
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'application/vnd.ms-excel',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'image/jpeg',
+                'image/jpg',
+                'image/png'
+            ];
+
+            const maxSize = 10 * 1024 * 1024; // 10MB
+
+            if (!allowedTypes.includes(file.type)) {
+                showAlert('File type not supported. Please use PDF, DOC, XLS, JPG, or PNG files.', 'error');
+                return false;
+            }
+
+            if (file.size > maxSize) {
+                showAlert('File size too large. Maximum size is 10MB.', 'error');
+                return false;
+            }
+
+            return true;
+        }
+
+        function updateAttachmentDisplay() {
+            const attachmentList = document.getElementById('attachmentList');
+
+            attachmentList.innerHTML = attachments.map(attachment => `
+                <div class="attachment-item">
+                    <div class="attachment-info">
+                        <i class="fas fa-file"></i>
+                        <span>${attachment.name}</span>
+                        <small>(${formatFileSize(attachment.size)})</small>
+                    </div>
+                    <span class="remove-attachment" onclick="removeAttachment('${attachment.id}')">
+                        <i class="fas fa-times"></i>
+                    </span>
+                </div>
+            `).join('');
+        }
+
+        function removeAttachment(attachmentId) {
+            attachments = attachments.filter(attachment => attachment.id != attachmentId);
+            updateAttachmentDisplay();
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Priority display update
+        function updatePriorityDisplay() {
+            const selectedPriority = document.querySelector('input[name="priority"]:checked');
+            if (selectedPriority) {
+                clearFieldError('priority');
+            }
+        }
+
+        // Preview functionality
+        function showPreview() {
+            const formData = collectFormData();
+
+            const previewModal = document.createElement('div');
+            previewModal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
+            `;
+
+            const previewContent = document.createElement('div');
+            previewContent.style.cssText = `
+                background: white;
+                padding: 30px;
+                border-radius: 15px;
+                max-width: 600px;
+                max-height: 80vh;
+                overflow-y: auto;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            `;
+
+            previewContent.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="color: #333; margin: 0;">Task Preview</h2>
+                    <button id="closePreview" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #666;">×</button>
+                </div>
+                <div style="border: 1px solid #e1e5e9; border-radius: 10px; padding: 20px;">
+                    <h3 style="color: #667eea; margin-bottom: 15px;">${formData.title || 'Untitled Task'}</h3>
+                    <div style="margin-bottom: 15px;">
+                        <strong>Category:</strong> ${formData.category || 'Not specified'}
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <strong>Priority:</strong> <span style="color: ${getPriorityColor(formData.priority)}">${formData.priority || 'Not set'}</span>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <strong>Status:</strong> ${formData.status}
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <strong>Due Date:</strong> ${formData.dueDate || 'Not set'} ${formData.dueTime || ''}
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <strong>Estimated Hours:</strong> ${formData.estimatedHours || 'Not specified'}
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <strong>Important:</strong> ${formData.isImportant ? 'Yes' : 'No'}
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <strong>Description:</strong><br>
+                        <div style="background: #f8f9fa; padding: 10px; border-radius: 5px; margin-top: 5px;">
+                            ${formData.description || 'No description provided'}
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <strong>Tags:</strong> ${formData.tags.length > 0 ? formData.tags.join(', ') : 'None'}
+                    </div>
+                    <div>
+                        <strong>Attachments:</strong> ${formData.attachments.length} file(s)
+                    </div>
+                </div>
+            `;
+
+            previewModal.appendChild(previewContent);
+            document.body.appendChild(previewModal);
+
+            // Close preview functionality
+            document.getElementById('closePreview').addEventListener('click', () => {
+                document.body.removeChild(previewModal);
+            });
+
+            previewModal.addEventListener('click', (e) => {
+                if (e.target === previewModal) {
+                    document.body.removeChild(previewModal);
+                }
+            });
+        }
+
+        function getPriorityColor(priority) {
+            switch (priority) {
+                case 'high': return '#dc3545';
+                case 'medium': return '#ffc107';
+                case 'low': return '#28a745';
+                default: return '#6c757d';
+            }
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function (e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch (e.key) {
+                    case 's':
+                        e.preventDefault();
+                        document.getElementById('taskForm').dispatchEvent(new Event('submit'));
+                        break;
+                    case 'p':
+                        e.preventDefault();
+                        showPreview();
+                        break;
+                }
+            }
+        });
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            showAlert('Form loaded successfully. Use Ctrl+S to save or Ctrl+P to preview.', 'info');
+        });
+</script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+# Maven
+/target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# IDE files
+/.idea/
+/*.iml
+*.class
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Spring Boot properties
+/application.properties
+
+# Logs
+*.log

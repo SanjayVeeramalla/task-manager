@@ -1,0 +1,12 @@
+D:\Documents\task-manager\task-manager\src\main\java\com\taskmanager\service\UserService.java
+D:\Documents\task-manager\task-manager\src\main\java\com\taskmanager\model\TaskStatus.java
+D:\Documents\task-manager\task-manager\src\main\java\com\taskmanager\controller\AuthController.java
+D:\Documents\task-manager\task-manager\src\main\java\com\taskmanager\repository\UserRepository.java
+D:\Documents\task-manager\task-manager\src\main\java\com\taskmanager\repository\TaskRepository.java
+D:\Documents\task-manager\task-manager\src\main\java\com\taskmanager\service\CustomUserDetailsService.java
+D:\Documents\task-manager\task-manager\src\main\java\com\taskmanager\model\User.java
+D:\Documents\task-manager\task-manager\src\main\java\com\taskmanager\service\TaskService.java
+D:\Documents\task-manager\task-manager\src\main\java\com\taskmanager\controller\TaskController.java
+D:\Documents\task-manager\task-manager\src\main\java\com\taskmanager\model\Task.java
+D:\Documents\task-manager\task-manager\src\main\java\com\taskmanager\config\SecurityConfig.java
+D:\Documents\task-manager\task-manager\src\main\java\com\taskmanager\TaskManagerApplication.java
