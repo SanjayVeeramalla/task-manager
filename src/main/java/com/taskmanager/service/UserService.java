@@ -34,11 +34,20 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
     
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email).orElse(null);
+    }
+    
     public boolean existsByUsername(String username) {
         return userRepository.existsByUsername(username);
     }
     
     public boolean existsByEmail(String email) {
         return userRepository.existsByEmail(email);
+    }
+    
+    public void updatePassword(User user, String newPassword) {
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
     }
 }
