@@ -237,14 +237,6 @@
         let isEditing = false;
         let taskId = null;
 
-        // Initialize form
-        document.addEventListener('DOMContentLoaded', function () {
-            setupEventListeners();
-            setupValidation();
-            setupAutoSave();
-            checkEditMode();
-            setMinDate();
-        });
 
         // Check if we're in edit mode
         function checkEditMode() {
@@ -326,7 +318,11 @@
             });
 
             // Date validation
-            document.getElementById('dueDate').addEventListener('change', validateDate);
+            const dueDate = document.getElementById('dueDate');
+if (dueDate) {
+    dueDate.addEventListener('change', validateDate);
+}
+
         }
 
         // Setup form validation
