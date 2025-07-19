@@ -860,8 +860,13 @@
 
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function () {
-            showAlert('Form loaded successfully. Use Ctrl+S to save or Ctrl+P to preview.', 'info');
-        });
+    setupEventListeners();
+    setupValidation();
+    setupAutoSave();
+    checkEditMode();
+    setMinDate();
+    showAlert('Form loaded successfully. Use Ctrl+S to save or Ctrl+P to preview.', 'info');
+});                           }
 </script>
 </body>
 </html>
