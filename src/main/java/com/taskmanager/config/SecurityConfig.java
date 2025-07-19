@@ -1,5 +1,3 @@
-// This is a placeholder for SecurityConfig.java
-// src/main/java/com/taskmanager/config/SecurityConfig.java
 package com.taskmanager.config;
 
 import com.taskmanager.service.CustomUserDetailsService;
@@ -13,62 +11,48 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    
+
     @Autowired
     private CustomUserDetailsService userDetailsService;
-    
-    // @Bean
-    // public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    //     http
-    //         .authorizeHttpRequests(authz -> authz
-    //             .requestMatchers("/", "/register", "/login", "/css/**", "/js/**", "/images/**").permitAll()
-    //             .anyRequest().authenticated()
-    //         )
-    //         .formLogin(form -> form
-    //             .loginPage("/login")
-    //             .defaultSuccessUrl("/dashboard", true)
-    //             .permitAll()
-    //         )
-    //         .logout(logout -> logout
-    //             .logoutUrl("/logout")
-    //             .logoutSuccessUrl("/login?logout")
-    //             .permitAll()
-    //         )
-    //         .userDetailsService(userDetailsService);
-        
-    //     return http.build();
-    // }
 
-    @Bean
-public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http
-        .csrf(csrf -> csrf.disable())
-        .authorizeHttpRequests(authz -> authz
-            .requestMatchers("/", "/register", "/login", "/css/**", "/js/**", "/images/**").permitAll()
-            .anyRequest().authenticated()
-        )
-        .formLogin(form -> form
-            .loginPage("/login")
-            .defaultSuccessUrl("/dashboard", true)
-            .permitAll()
-        )
-        .logout(logout -> logout
-            .logoutRequestMatcher(new AntPathRequestMatcher("/logout")) // ✅ this line allows GET logout
-            .logoutSuccessUrl("/login?logout")
-            .permitAll()
-        )
-        .userDetailsService(userDetailsService);
-
-    return http.build();
-}
-
-    
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder(12); // 12 strength for better security
+    }
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+            .csrf(csrf -> csrf
+                .ignoringRequestMatchers("/h2-console/**") // Allow H2 console
+                .disable()
+            )
+            .headers(headers -> headers
+                .frameOptions().sameOrigin() // Required for H2 console
+            )
+            .authorizeHttpRequests(authz -> authz
+                .requestMatchers("/", "/login", "/register", "/forgot-password", "/reset-password").permitAll()
+                .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico", "/h2-console/**").permitAll()
+                .anyRequest().authenticated()
+            )
+            .formLogin(form -> form
+                .loginPage("/login")
+                .defaultSuccessUrl("/dashboard", true)
+                .failureUrl("/login?error=true")
+                .permitAll()
+            )
+            .logout(logout -> logout
+                .logoutRequestMatcher(new AntPathRequestMatcher("/logout")) // Allows GET and POST logout
+                .logoutSuccessUrl("/login?logout=true")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
+                .permitAll()
+            )
+            .userDetailsService(userDetailsService);
+
+        return http.build();
     }
 }
