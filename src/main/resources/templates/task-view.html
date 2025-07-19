@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>View Task</title>
+</head>
+<body>
+    <h2>Task Details</h2>
+    <p><strong>Title:</strong> <span th:text="${task.title}"></span></p>
+    <p><strong>Category:</strong> <span th:text="${task.category}"></span></p>
+    <p><strong>Deadline:</strong> <span th:text="${#temporals.format(task.deadline, 'yyyy-MM-dd HH:mm')}"></span></p>
+    <p><strong>Priority:</strong> <span th:text="${task.priority}"></span></p>
+    <p><strong>Status:</strong> <span th:text="${task.status}"></span></p>
+    <p><strong>Important:</strong> <span th:text="${task.important} ? 'Yes' : 'No'"></span></p>
+    <a href="/dashboard">Back to Dashboard</a>
+</body>
+</html>
