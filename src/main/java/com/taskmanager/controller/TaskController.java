@@ -28,14 +28,13 @@ public class TaskController {
     @Autowired
     private UserService userService;
 
-    // @ModelAttribute("_csrf")
-    // public CsrfToken csrfToken(HttpServletRequest request) {
-    //     // Spring Security auto‑populates this request attribute
-    //     return (CsrfToken) request.getAttribute(CsrfToken.class.getName());
-    // }
-
-   
-
+    @GetMapping("/tasks/{id}")
+public String viewTask(@PathVariable Long id, Model model) {
+    Task task = taskService.getTaskById(id)
+                           .orElseThrow(() -> new RuntimeException("Task not found with ID: " + id));
+    model.addAttribute("task", task);
+    return "task-view";
+}
 
 
     @ModelAttribute
