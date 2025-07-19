@@ -322,3 +322,108 @@ body {
         box-shadow: none;
     }
 }
+
+/* Password toggle container */
+.password-toggle-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-toggle-container .form-control {
+    padding-right: 3rem; /* Make space for the eye icon */
+}
+
+/* Password toggle eye icon */
+.password-toggle {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #a0aec0;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    z-index: 10;
+    padding: 0.25rem;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+}
+
+.password-toggle:hover {
+    color: #667eea;
+    background: rgba(102, 126, 234, 0.1);
+}
+
+.password-toggle:active {
+    transform: translateY(-50%) scale(0.95);
+}
+
+/* Focus styles for password toggle */
+.password-toggle:focus {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+}
+
+/* Forgot password link styling */
+.forgot-password {
+    color: #718096 !important;
+    font-size: 0.8rem !important;
+    opacity: 0.8;
+    transition: all 0.2s ease;
+}
+
+.forgot-password:hover {
+    color: #667eea !important;
+    opacity: 1;
+}
+
+.forgot-password::after {
+    background: #718096 !important;
+}
+
+.forgot-password:hover::after {
+    background: #667eea !important;
+}
+
+/* Enhanced mobile support for password toggle */
+@media (max-width: 480px) {
+    .password-toggle {
+        right: 0.75rem;
+        width: 28px;
+        height: 28px;
+        font-size: 1.1rem;
+    }
+    
+    .password-toggle-container .form-control {
+        padding-right: 3.5rem;
+    }
+}
+
+/* High contrast mode for password toggle */
+@media (prefers-contrast: high) {
+    .password-toggle {
+        color: #000;
+        border: 1px solid #000;
+    }
+    
+    .password-toggle:hover {
+        background: #000;
+        color: #fff;
+    }
+}
+
+/* Reduced motion for password toggle */
+@media (prefers-reduced-motion: reduce) {
+    .password-toggle {
+        transition: none;
+    }
+    
+    .password-toggle:active {
+        transform: translateY(-50%);
+    }
+}
