@@ -419,23 +419,24 @@ if (dueDate) {
         }
 
         // Collect form data
-        function collectFormData() {
-            const formData = {
-                title: document.getElementById('title').value,
-                description: document.getElementById('description').value,
-                category: document.getElementById('category').value,
-                priority: document.querySelector('input[name="priority"]:checked')?.value,
-                status: document.getElementById('status').value,
-                dueDate: document.getElementById('dueDate').value,
-                dueTime: document.getElementById('dueTime').value,
-                estimatedHours: document.getElementById('estimatedHours').value,
-                isImportant: document.getElementById('isImportant').checked,
-                tags: tags,
-                attachments: attachments
-            };
+       function collectFormData() {
+    const formData = {
+        title: document.getElementById('title')?.value || '',
+        description: document.getElementById('description')?.value || '',
+        category: document.getElementById('category')?.value || '',
+        priority: document.querySelector('input[name="priority"]:checked')?.value || '',
+        status: document.getElementById('status')?.value || '',
+        dueDate: document.getElementById('deadline')?.value || '', // ✅ correct id
+        dueTime: '', // ⛔ not present, so leave blank or remove if unused
+        estimatedHours: document.getElementById('estimatedHours')?.value || '',
+        isImportant: document.getElementById('isImportant')?.checked || false,
+        tags: typeof tags !== 'undefined' ? tags : [], // ✅ make sure `tags` is globally defined
+        attachments: typeof attachments !== 'undefined' ? attachments : [] // ✅ make sure this too is defined
+    };
 
-            return formData;
-        }
+    return formData;
+}
+
 
         // Form validation
         function validateForm() {
