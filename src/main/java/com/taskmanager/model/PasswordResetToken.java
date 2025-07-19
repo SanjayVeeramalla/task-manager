@@ -1,4 +1,4 @@
-package com.taskmanager.model; // Replace with your actual package name
+package com.taskmanager.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
