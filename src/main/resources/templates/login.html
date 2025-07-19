@@ -36,18 +36,42 @@
                 
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <input type="password" id="password" name="password" class="form-control" required>
+                    <div class="password-toggle-container">
+                        <input type="password" id="password" name="password" class="form-control" required>
+                        <span class="password-toggle" onclick="togglePasswordVisibility()">
+                            <i id="password-toggle-icon" class="fas fa-eye"></i>
+                        </span>
+                    </div>
                 </div>
                 
                 <button type="submit" class="btn">
                     <i class="fas fa-sign-in-alt"></i> Login
                 </button>
             </form>
+
+
             
             <div class="auth-links">
                 <p>Don't have an account? <a href="/register">Register here</a></p>
+                <p><a href="#" class="forgot-password">Forgot password?</a></p>
             </div>
         </div>
     </div>
+       <script>
+        function togglePasswordVisibility() {
+            const passwordField = document.getElementById('password');
+            const passwordToggleIcon = document.getElementById('password-toggle-icon');
+
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                passwordToggleIcon.classList.remove('fa-eye');
+                passwordToggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                passwordToggleIcon.classList.remove('fa-eye-slash');
+                passwordToggleIcon.classList.add('fa-eye');
+            }
+        }
+    </script>
 </body>
 </html>
