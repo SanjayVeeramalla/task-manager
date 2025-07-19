@@ -2,15 +2,46 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>View Task</title>
+    <!-- Include the CSS here -->
+     <link rel="stylesheet" href="/css/task-view.css">
 </head>
 <body>
-    <h2>Task Details</h2>
-    <p><strong>Title:</strong> <span th:text="${task.title}"></span></p>
-    <p><strong>Category:</strong> <span th:text="${task.category}"></span></p>
-    <p><strong>Deadline:</strong> <span th:text="${#temporals.format(task.deadline, 'yyyy-MM-dd HH:mm')}"></span></p>
-    <p><strong>Priority:</strong> <span th:text="${task.priority}"></span></p>
-    <p><strong>Status:</strong> <span th:text="${task.status}"></span></p>
-    <p><strong>Important:</strong> <span th:text="${task.important} ? 'Yes' : 'No'"></span></p>
-    <a href="/dashboard">Back to Dashboard</a>
+    <div class="task-container">
+        <h2>Task Details</h2>
+        
+        <div class="task-details">
+            <div class="task-field full-width">
+                <span class="field-label">Title</span>
+                <span class="field-value" th:text="${task.title}"></span>
+            </div>
+            
+            <div class="task-field">
+                <span class="field-label">Category</span>
+                <span class="field-value" th:text="${task.category}"></span>
+            </div>
+            
+            <div class="task-field">
+                <span class="field-label">Deadline</span>
+                <span class="field-value" th:text="${#temporals.format(task.deadline, 'yyyy-MM-dd HH:mm')}"></span>
+            </div>
+            
+            <div class="task-field" th:classappend="'priority-' + ${#strings.toLowerCase(task.priority)}">
+                <span class="field-label">Priority</span>
+                <span class="field-value" th:text="${task.priority}"></span>
+            </div>
+            
+            <div class="task-field" th:classappend="'status-' + ${#strings.toLowerCase(#strings.replace(task.status, ' ', '-'))}">
+                <span class="field-label">Status</span>
+                <span class="field-value" th:text="${task.status}"></span>
+            </div>
+            
+            <div class="task-field" th:classappend="${task.important} ? 'important-yes' : 'important-no'">
+                <span class="field-label">Important</span>
+                <span class="field-value" th:text="${task.important} ? 'Yes' : 'No'"></span>
+            </div>
+        </div>
+        
+        <a href="/dashboard" class="back-button">Back to Dashboard</a>
+    </div>
 </body>
 </html>
