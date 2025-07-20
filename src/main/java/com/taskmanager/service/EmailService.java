@@ -11,7 +11,7 @@ public class EmailService {
     @Value("${app.url:http://localhost:8080}")
     private String appUrl;
     
-    public void sendPasswordResetEmail(String toEmail, String resetUrl) {
+    public void sendPasswordResetEmail(String toEmail, String resetUrl, String username) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
