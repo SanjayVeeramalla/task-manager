@@ -1,5 +1,3 @@
-// This is a placeholder for AuthController.java
-// src/main/java/com/taskmanager/controller/AuthController.java
 package com.taskmanager.controller;
 
 import com.taskmanager.model.User;
@@ -61,13 +59,11 @@ public class AuthController {
     
     // ===== FORGOT PASSWORD FUNCTIONALITY =====
     
-    // Show forgot password form
     @GetMapping("/forgot-password")
     public String showForgotPasswordForm(Model model) {
         return "forgot-password";
     }
     
-    // Handle forgot password form submission
     @PostMapping("/forgot-password")
     public String processForgotPassword(
             @RequestParam("email") String email,
@@ -75,23 +71,19 @@ public class AuthController {
             RedirectAttributes redirectAttributes) {
         
         try {
-            // Check if user exists with this email
             User user = userService.findByEmail(email);
             if (user == null) {
                 redirectAttributes.addFlashAttribute("error", "No account found with that email address.");
                 redirectAttributes.addFlashAttribute("email", email);
                 return "redirect:/forgot-password";
             }
-            
-            // Generate reset token
-            String token = tokenService.createPasswordResetToken(user);
-            
-            // Create reset URL
+
+            String token = tokenService.generateResetToken(user); // ✅ FIXED
+
             String appUrl = request.getScheme() + "://" + request.getServerName() + 
                           ":" + request.getServerPort() + request.getContextPath();
             String resetUrl = appUrl + "/reset-password?token=" + token;
             
-            // Send email
             emailService.sendPasswordResetEmail(user.getEmail(), resetUrl, user.getUsername());
             
             redirectAttributes.addFlashAttribute("success", "Password reset instructions have been sent to your email.");
@@ -104,12 +96,9 @@ public class AuthController {
         }
     }
     
-    // Show reset password form
     @GetMapping("/reset-password")
     public String showResetPasswordForm(@RequestParam("token") String token, Model model) {
-        
-        // Verify token is valid and not expired
-        if (!tokenService.isValidToken(token)) {
+        if (!tokenService.validateToken(token)) { // ✅ FIXED
             return "redirect:/forgot-password?expired=true";
         }
         
@@ -117,7 +106,6 @@ public class AuthController {
         return "reset-password";
     }
     
-    // Handle password reset
     @PostMapping("/reset-password")
     public String processPasswordReset(
             @RequestParam("token") String token,
@@ -125,28 +113,24 @@ public class AuthController {
             @RequestParam("confirmPassword") String confirmPassword,
             RedirectAttributes redirectAttributes) {
         
-        // Verify token
-        if (!tokenService.isValidToken(token)) {
+        if (!tokenService.validateToken(token)) { // ✅ FIXED
             return "redirect:/forgot-password?expired=true";
         }
         
-        // Validate passwords match
         if (!password.equals(confirmPassword)) {
             redirectAttributes.addFlashAttribute("error", "Passwords do not match.");
             return "redirect:/reset-password?token=" + token;
         }
-        
-        // Validate password strength (add your own validation)
+
         if (password.length() < 6) {
             redirectAttributes.addFlashAttribute("error", "Password must be at least 6 characters long.");
             return "redirect:/reset-password?token=" + token;
         }
         
         try {
-            // Reset the password
             User user = tokenService.getUserByToken(token);
             userService.updatePassword(user, password);
-            tokenService.deleteToken(token);
+            tokenService.invalidateToken(token); // ✅ FIXED
             
             redirectAttributes.addFlashAttribute("success", "Password reset successful! Please login with your new password.");
             return "redirect:/login";
