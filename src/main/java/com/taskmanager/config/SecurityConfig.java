@@ -34,7 +34,15 @@ public class SecurityConfig {
                 .frameOptions().sameOrigin() // Required for H2 console
             )
             .authorizeHttpRequests(authz -> authz
-    .requestMatchers("/", "/login", "/register", "/forgot-password", "/reset-password**").permitAll()
+    .requestMatchers(
+    "/", 
+    "/login", 
+    "/register", 
+    "/forgot-password", 
+    "/forgot-password/**", 
+    "/reset-password", 
+    "/reset-password/**"
+).permitAll()
     .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico", "/h2-console/**").permitAll()
     .anyRequest().authenticated()
 )
