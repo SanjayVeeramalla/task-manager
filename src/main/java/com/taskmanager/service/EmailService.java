@@ -1,4 +1,7 @@
 // EmailService
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+import org.springframework.mail.javamail.MimeMessageHelper;
 @Service
 public class EmailService {
     
