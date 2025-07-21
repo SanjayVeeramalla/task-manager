@@ -34,10 +34,10 @@ public class SecurityConfig {
                 .frameOptions().sameOrigin() // Required for H2 console
             )
             .authorizeHttpRequests(authz -> authz
-                .requestMatchers("/", "/login", "/register", "/forgot-password", "/reset-password").permitAll()
-                .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico", "/h2-console/**").permitAll()
-                .anyRequest().authenticated()
-            )
+    .requestMatchers("/", "/login", "/register", "/forgot-password", "/reset-password**").permitAll()
+    .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico", "/h2-console/**").permitAll()
+    .anyRequest().authenticated()
+)
             .formLogin(form -> form
                 .loginPage("/login")
                 .defaultSuccessUrl("/dashboard", true)
