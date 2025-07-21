@@ -1,37 +1,42 @@
-// EmailService
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.stereotype.Service;
+
 @Service
 public class EmailService {
-    
+
     @Autowired
     private JavaMailSender mailSender;
-    
+
     @Value("${app.name:Task Manager}")
     private String appName;
-    
+
     @Value("${app.url:http://localhost:8080}")
     private String appUrl;
-    
+
     public void sendPasswordResetEmail(String toEmail, String resetUrl, String username) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-            
+
             helper.setTo(toEmail);
             helper.setSubject(appName + " - Password Reset Request");
-            
+
             String htmlContent = buildPasswordResetEmailContent(resetUrl);
             helper.setText(htmlContent, true);
-            
+
             mailSender.send(message);
-            
+
         } catch (Exception e) {
             throw new RuntimeException("Failed to send password reset email", e);
         }
     }
-    
+
     private String buildPasswordResetEmailContent(String resetUrl) {
         return "<!DOCTYPE html>" +
                 "<html>" +
