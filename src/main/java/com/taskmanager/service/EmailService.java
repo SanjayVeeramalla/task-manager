@@ -1,3 +1,4 @@
+package com.taskmanager.service;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 
