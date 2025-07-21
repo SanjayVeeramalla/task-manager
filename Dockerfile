@@ -1,14 +1,15 @@
-# Use Java 17 with Maven preinstalled
-FROM maven:3.9.4-eclipse-temurin-17
-
-# Set working directory inside container
+FROM maven:3.9.4-eclipse-temurin-17 AS build
 WORKDIR /app
 
-# Copy all files to container
-COPY . .
+COPY pom.xml .
+RUN mvn dependency:go-offline
 
-# Build the application
+COPY . .
 RUN mvn clean package -DskipTests
 
-# Run the application
-CMD ["java", "-jar", "target/task-manager-1.0.0.jar"]
+FROM eclipse-temurin:17-jdk
+WORKDIR /app
+COPY --from=build /app/target/task-manager-1.0.0.jar app.jar
+
+EXPOSE 8080
+CMD ["java", "-jar", "app.jar"]
